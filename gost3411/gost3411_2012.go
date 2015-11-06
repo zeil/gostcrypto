@@ -108,13 +108,13 @@ func (d *digest) checkSum() [Size]byte {
 	for i := d.nx + 1; i < BlockSize; i++ {
 		d.x[i] = 0
 	}
-	m := d.x[:]
-	N := d.N[:]
-	h := d.h[:]
-	Σ := d.Σ[:]
+	m := &d.x
+	N := &d.N
+	h := &d.h
+	Σ := &d.Σ
 	g(N, h, m)
 	addLen(N, uint64(d.nx))
-	add(Σ, m)
+	add(Σ, m[:])
 	g(nil, h, N)
 	g(nil, h, Σ)
 	var digest [Size]byte

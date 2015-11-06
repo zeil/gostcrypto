@@ -148,13 +148,13 @@ var _C = [12][64]uint8{
 		0x7a, 0xb1, 0x49, 0x04, 0xb0, 0x80, 0x13, 0xd2, 0xba, 0x31, 0x16, 0xf1, 0x67, 0xe7, 0x8e, 0x37},
 }
 
-func xor(k []uint8, a []uint8, res []uint8) {
+func xor(k *[BlockSize]uint8, a *[BlockSize]uint8, res *[BlockSize]uint8) {
 	for i := 0; i < BlockSize; i++ {
 		res[i] = k[i] ^ a[i]
 	}
 }
 
-func ps(a []uint8, res []uint8) {
+func ps(a *[BlockSize]uint8, res *[BlockSize]uint8) {
 	for i := 0; i < BlockSize; i++ {
 		res[τ[i]] = π[a[i]]
 	}
@@ -178,31 +178,31 @@ func l(a []uint8, res []uint8) {
 	return
 }
 
-func lps(a []uint8, tmp []uint8) {
+func lps(a *[BlockSize]uint8, tmp *[BlockSize]uint8) {
 	ps(a, tmp)
 	for i := 0; i < 8; i++ {
 		l(tmp[8*i:8*i+8], a[8*i:8*i+8])
 	}
 }
 
-func e(K []uint8, m []uint8, res []uint8, tmp []uint8) {
-	Ki := make([]uint8, BlockSize)
-	copy(Ki, K)
+func e(K *[BlockSize]uint8, m *[BlockSize]uint8, res *[BlockSize]uint8, tmp *[BlockSize]uint8) {
+	Ki := new([BlockSize]uint8)
+	copy(Ki[:], K[:])
 	xor(Ki, m, res)
 	for i := 0; i < 12; i++ {
 		lps(res, tmp)
 
-		xor(Ki, _C[i][:], Ki)
+		xor(Ki, &_C[i], Ki)
 		lps(Ki, tmp)
 
 		xor(Ki, res, res)
 	}
 }
 
-func g(N []uint8, h []uint8, m []uint8) {
-	hCopy := make([]uint8, BlockSize)
-	tmp := make([]uint8, BlockSize)
-	copy(hCopy, h)
+func g(N *[BlockSize]uint8, h *[BlockSize]uint8, m *[BlockSize]uint8) {
+	hCopy := new([BlockSize]uint8)
+	tmp := new([BlockSize]uint8)
+	copy(hCopy[:], h[:])
 	if N != nil {
 		xor(h, N, h)
 	}
@@ -213,7 +213,7 @@ func g(N []uint8, h []uint8, m []uint8) {
 	return
 }
 
-func add(a []uint8, b []uint8) {
+func add(a *[BlockSize]uint8, b []uint8) {
 	c := uint8(0)
 	for i := 0; i < len(b); i++ {
 		a[i] = a[i] + b[i] + c
@@ -231,23 +231,24 @@ func add(a []uint8, b []uint8) {
 	}
 }
 
-func addLen(a []uint8, len uint64) {
-	lenBin := make([]uint8, 8)
+func addLen(a *[BlockSize]uint8, len uint64) {
+	lenBin := new([8]uint8)
 	// Length in bits.
 	len <<= 3
-	binary.LittleEndian.PutUint64(lenBin, len)
-	add(a, lenBin)
+	binary.LittleEndian.PutUint64(lenBin[:], len)
+	add(a, lenBin[:])
 }
 
 func block(d *digest, p []byte) {
-	N := d.N[:]
-	h := d.h[:]
-	Σ := d.Σ[:]
+	N := &d.N
+	h := &d.h
+	Σ := &d.Σ
+	m := new([BlockSize]uint8)
 	for len(p) >= BlockSize {
-		m := p[:BlockSize]
+		copy(m[:], p[:BlockSize])
+		p = p[BlockSize:]
 		g(N, h, m)
 		addLen(N, BlockSize)
-		add(Σ, m)
-		p = p[BlockSize:]
+		add(Σ, m[:])
 	}
 }
