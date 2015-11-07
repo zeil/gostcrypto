@@ -148,13 +148,13 @@ var _C = [12][64]uint8{
 		0x7a, 0xb1, 0x49, 0x04, 0xb0, 0x80, 0x13, 0xd2, 0xba, 0x31, 0x16, 0xf1, 0x67, 0xe7, 0x8e, 0x37},
 }
 
-func xor(k *[BlockSize]uint8, a *[BlockSize]uint8, res *[BlockSize]uint8) {
+func xor(k, a, res *[BlockSize]uint8) {
 	for i := 0; i < BlockSize; i++ {
 		res[i] = k[i] ^ a[i]
 	}
 }
 
-func lps(a *[BlockSize]uint8, tmp *[BlockSize]uint8) {
+func lps(a, tmp *[BlockSize]uint8) {
 	for i := 0; i < BlockSize; i++ {
 		tmp[τ[i]] = π[a[i]]
 	}
@@ -263,7 +263,7 @@ func lps(a *[BlockSize]uint8, tmp *[BlockSize]uint8) {
 	}
 }
 
-func e(K *[BlockSize]uint8, m *[BlockSize]uint8, res *[BlockSize]uint8, tmp *[BlockSize]uint8) {
+func e(K, m, res, tmp *[BlockSize]uint8) {
 	Ki := new([BlockSize]uint8)
 	copy(Ki[:], K[:])
 	xor(Ki, m, res)
@@ -277,7 +277,7 @@ func e(K *[BlockSize]uint8, m *[BlockSize]uint8, res *[BlockSize]uint8, tmp *[Bl
 	}
 }
 
-func g(N *[BlockSize]uint8, h *[BlockSize]uint8, m *[BlockSize]uint8) {
+func g(N, h, m *[BlockSize]uint8) {
 	hCopy := new([BlockSize]uint8)
 	tmp := new([BlockSize]uint8)
 	copy(hCopy[:], h[:])
