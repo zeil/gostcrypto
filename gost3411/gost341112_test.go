@@ -1,4 +1,4 @@
-package gost3411_2012
+package gost341112
 
 import (
 	"encoding/hex"
