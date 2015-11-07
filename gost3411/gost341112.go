@@ -11,13 +11,13 @@ func init() {
 	//crypto.RegisterHash(crypto.GOSTR3411_2012_512, New)
 }
 
-// The size of a GOSTR3411_2012_512 checksum in bytes.
+// The size of a GOST R 34.11-2012 512 bit checksum in bytes.
 const Size = 64
 
-// The size of a GOSTR3411_2012_256 checksum in bytes.
+// The size of a GOST R 34.11-2012 256 bit checksum in bytes.
 const Size256 = 32
 
-// The blocksize of GOSTR3411_2012_512 and GOSTR3411_2012_256 in bytes.
+// The blocksize of GOST R 34.11-2012 512 and 256 bit in bytes.
 const BlockSize = 64
 
 // digest represents the partial evaluation of a checksum.
@@ -28,7 +28,7 @@ type digest struct {
 	x     [BlockSize]byte
 	nx    int
 	len   uint64
-	is256 bool // mark if this digest is GOSTR3411_2012_256
+	is256 bool // mark if this digest is GOST R 34.11-2012 256 bit
 }
 
 func (d *digest) Reset() {
@@ -46,14 +46,14 @@ func (d *digest) Reset() {
 	d.len = 0
 }
 
-// New returns a new hash.Hash computing the GOSTR3411_2012_512 checksum.
+// New returns a new hash.Hash computing the GOST R 34.11-2012 512 bit checksum.
 func New() hash.Hash {
 	d := new(digest)
 	d.Reset()
 	return d
 }
 
-// New256 returns a new hash.Hash computing the GOSTR3411_2012_256 checksum.
+// New256 returns a new hash.Hash computing the GOST R 34.11-2012 256 bit checksum.
 func New256() hash.Hash {
 	d := new(digest)
 	d.is256 = true
@@ -122,7 +122,7 @@ func (d *digest) checkSum() [Size]byte {
 	return digest
 }
 
-// Sum512 returns the GOSTR3411_2012_512 checksum of the data.
+// Sum512 returns the GOST R 34.11-2012 512 bit checksum of the data.
 func Sum512(data []byte) [Size]byte {
 	var d digest
 	d.Reset()
@@ -130,7 +130,7 @@ func Sum512(data []byte) [Size]byte {
 	return d.checkSum()
 }
 
-// Sum256 returns the GOSTR3411_2012_256 checksum of the data.
+// Sum256 returns the GOST R 34.11-2012 256 bit checksum of the data.
 func Sum256(data []byte) (sum256 [Size256]byte) {
 	var d digest
 	d.is256 = true
